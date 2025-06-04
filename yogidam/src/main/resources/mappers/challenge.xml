@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.ChallengeDao">
+	<select id="findByType" parameterType="int"
+	resultType="com.ssafy.trip.model.dto.Challenge">
+		select * from missions where type=#{type}
+	</select> 
+	
+	<insert id="insert" parameterType="ChallengeStampRecord">
+		INSERT INTO stamp_missions (user_id, type, place, content, proof)
+    VALUES (#{userId}, #{type}, #{place}, #{content}, #{proof})
+	</insert>
+	
+	<select id="findByUserIdAndType" resultType="com.ssafy.trip.model.dto.ChallengeStampRecord">
+	    SELECT user_mission_id AS userMissionId, user_id AS userId, type, place, content, proof FROM stamp_missions
+	    WHERE user_id = #{userId} AND type = #{type}
+	    ORDER BY user_mission_id ASC
+	</select>
+
+	<delete id="delete" parameterType="int">
+	    DELETE FROM stamp_missions WHERE user_mission_id = #{id}
+	</delete>
+	<!-- ////////////////////////////// -->
+	<select id="findByUserId" parameterType="string" resultType="com.ssafy.trip.model.dto.ChallengePlan">
+        SELECT 
+	        plan_id AS planId,
+	        user_id AS userId,
+	        title,
+	        start_date AS startDate,
+	        end_date AS endDate,
+	        created_at AS createdAt,
+	        memo
+	    FROM plans
+	    WHERE user_id = #{userId}
+    </select>
+    
+    <select id="findPlanById" parameterType="string" resultType="com.ssafy.trip.model.dto.ChallengePlan">
+	    SELECT plan_id AS planId, user_id AS userId, title, start_date AS startDate,
+	           end_date AS endDate, created_at AS createdAt, memo
+	    FROM plans
+	    WHERE plan_id = #{planId}
+	</select>
+	
+	<select id="findByPlanId" parameterType="string" resultType="com.ssafy.trip.model.dto.PlanAttraction">
+	    SELECT
+	        pa.plan_attraction_id as planAttractionId,
+	        pa.plan_id as planId,
+	        pa.attraction_id as attractionId,
+	        a.title AS attractionTitle,
+	        pa.visit_date as visitDate,
+	        pa.visit_order as visitOrder,
+	        pa.memo as memo,
+	        pa.image_url as imageUrl
+	    FROM plan_attractions pa
+	    JOIN attractions a ON pa.attraction_id = a.attraction_id
+	    WHERE pa.plan_id = #{planId}
+	</select>
+
+	<update id="updateImageUrl">
+		update plan_attractions
+		set image_url=#{imageUrl}
+		where plan_attraction_id=#{planAttractionId}
+	</update>
+	
+	<!--  -->
+	<select id="countMissionsByType" parameterType="int" resultType="int">
+	  SELECT COUNT(*) FROM missions WHERE type = #{type}
+	</select>
+	
+	
+	<select id="countUserMissionsByType" resultType="int">
+	  SELECT COUNT(*) FROM stamp_missions
+	  WHERE user_id = #{userId} AND type = #{type}
+	</select>
+</mapper>

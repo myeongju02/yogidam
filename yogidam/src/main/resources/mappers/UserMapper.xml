@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.UserMapper">
+    <update id="addPoint">
+        UPDATE users
+        SET point = point + #{point}
+        WHERE id = #{userId}
+    </update>
+    
+    <update id="updatePointGiven">
+	    UPDATE plan_attractions
+	    SET point_given = #{pointGiven}
+	    WHERE plan_attraction_id = #{planAttractionId}
+	</update>
+	    
+</mapper>

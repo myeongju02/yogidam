@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+    "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.BoardDao">
+
+	<resultMap id="BoardResultMap"
+		type="com.ssafy.trip.model.dto.Board">
+		<id property="id" column="id" />
+		<result property="title" column="title" />
+		<result property="content" column="content" />
+		<result property="author" column="author" />
+		<result property="createdAt" column="created_at" />
+		<result property="category" column="category" />
+		<result property="imagesJson" column="images" />
+		<result property="filesJson" column="files" />
+	</resultMap>
+
+	<select id="findAll" resultMap="BoardResultMap">
+		SELECT * FROM board ORDER BY id DESC
+	</select>
+
+	<select id="findById" parameterType="string"
+		resultMap="BoardResultMap">
+		SELECT * FROM board WHERE id = #{id}
+	</select>
+
+	<select id="selectBoardsByUserId" parameterType="string"
+		resultMap="BoardResultMap">
+		SELECT * FROM board WHERE author = #{userId} ORDER BY created_at DESC
+	</select>
+
+	<insert id="insert"
+		parameterType="com.ssafy.trip.model.dto.Board">
+		INSERT INTO board (title, content, author, created_at, category, images,
+		files)
+		VALUES (#{title}, #{content}, #{author}, #{createdAt}, #{category},
+		#{imagesJson}, #{filesJson})
+	</insert>
+
+	<update id="update"
+		parameterType="com.ssafy.trip.model.dto.Board">
+		UPDATE board
+		SET title = #{title},
+		content = #{content},
+		author = #{author},
+		category = #{category},
+		images = #{imagesJson},
+		files = #{filesJson}
+		WHERE id = #{id}
+	</update>
+
+	<delete id="delete" parameterType="string">
+		DELETE FROM board WHERE id = #{id}
+	</delete>
+</mapper>

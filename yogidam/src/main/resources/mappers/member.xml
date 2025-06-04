@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.MemberDao">
+	<!-- 수정완료 -->
+    <insert id="insert" useGeneratedKeys="true" keyProperty="id">
+        insert into users (id, password, nickname, point, email, birth, profile, profiletitle, role)
+        values(#{id}, #{password}, #{nickname}, 0, #{email}, #{birth},'https://yogidam.s3.ap-northeast-2.amazonaws.com/profile/defaultprofileImg.png', '..', 'USER')
+    </insert>
+
+	<!-- 수정완료 -->
+    <update id="update">
+        update users
+        set nickname=#{nickname}, password=#{password}, email = #{email}, profileTitle=#{profileTitle}
+        where id=#{id}
+    </update>
+    
+	<!-- 수정완료 -->
+    <delete id="delete">
+        delete from users
+        where id=#{id}
+    </delete>
+
+    <update id="updateProfile">
+        update member
+        set profile=#{profile}
+        where email=#{email}
+    </update>
+
+	<!-- 수정완료 -->
+    <select id="select" resultType="Member">
+        select * from users where id=#{id}
+    </select>
+    
+    <!-- 수정완료 -->
+    <select id="findById" parameterType="String" resultType="com.ssafy.trip.model.dto.Member">
+	    SELECT * FROM users WHERE id = #{id}
+	</select>
+</mapper>

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.PlanDao">
+
+	<!-- 1. 계획 저장 -->
+	<insert id="insertPlan"
+		parameterType="com.ssafy.trip.model.dto.Plan">
+		INSERT INTO plans (plan_id, user_id, title, start_date,
+		end_date, memo,
+		created_at)
+		VALUES (
+		#{planId},
+		#{userId},
+		#{title},
+		#{startDate, jdbcType=DATE},
+		#{startDate, jdbcType=DATE},
+		#{memo},
+		NOW()
+		)
+	</insert>
+
+	<!-- 2. 계획별 관광지 저장 -->
+	<insert id="insertPlanAttractions" parameterType="map">
+		<if test="list != null and !list.isEmpty()">
+			INSERT INTO plan_attractions (plan_attraction_id, plan_id,
+			attraction_id)
+			VALUES
+			<foreach collection="list" item="attractionId" separator=",">
+				(UUID(), #{planId}, #{attractionId, jdbcType=VARCHAR})
+			</foreach>
+		</if>
+	</insert>
+	<!-- 2-1. 계획별 관광지 저장 전 관광지 정보 조회 저장 -->
+	<select id="existsAttraction" parameterType="string"
+		resultType="int">
+		SELECT COUNT(*) FROM attractions WHERE attraction_id = #{attractionId}
+	</select>
+	<insert id="insertAttraction"
+		parameterType="com.ssafy.trip.model.dto.TourSpot">
+		INSERT INTO attractions (
+		attraction_id, title, addr1, addr2, areacode, booktour, cat1, cat2, cat3,
+		contenttypeid, createdtime, firstimage, firstimage2, cpyrhtDivCd,
+		mapx, mapy,
+		mlevel, modifiedtime, sigungucode, tel
+		) VALUES (
+		#{contentId}, #{title}, #{addr1}, #{addr2}, #{areacode}, #{booktour}, #{cat1},
+		#{cat2}, #{cat3},
+		#{contenttypeid}, #{createdtime}, #{firstimage}, #{firstimage2}, #{cpyrhtDivCd},
+		#{mapx}, #{mapy},
+		#{mlevel}, #{modifiedtime}, #{sigungucode}, #{tel}
+		)
+	</insert>
+
+
+	<!-- 3. 내 모든 계획 목록 조회 -->
+	<select id="selectPlansByUserId" parameterType="string"
+		resultType="com.ssafy.trip.model.dto.Plan">
+		SELECT plan_id AS planId, user_id AS userId, title,
+		start_date AS startDate,
+		end_date AS endDate, memo
+		FROM plans
+		WHERE
+		user_id = #{userId}
+		ORDER BY created_at DESC
+	</select>
+
+
+	<!-- 4. 특정 계획의 관광지 목록 조회 (관광지 상세까지) -->
+<select id="selectAttractionsByPlanId" parameterType="string"
+    resultType="com.ssafy.trip.model.dto.TourSpot">
+    SELECT
+        a.attraction_id AS contentId,
+        a.title,
+        a.addr1,
+        a.addr2,
+        a.areacode,
+        a.booktour,
+        a.cat1,
+        a.cat2,
+        a.cat3,
+        a.contenttypeid,
+        a.createdtime,
+        a.firstimage,
+        a.firstimage2,
+        a.cpyrhtDivCd,
+        a.mapx,
+        a.mapy,
+        a.mlevel,
+        a.modifiedtime,
+        a.sigungucode,
+        a.tel
+    FROM attractions a
+    JOIN plan_attractions pa ON a.attraction_id = pa.attraction_id
+    WHERE pa.plan_id = #{planId}
+    ORDER BY pa.visit_order
+</select>
+
+	<!-- 5. 계획 삭제 -->
+	<delete id="deletePlan" parameterType="string">
+		DELETE FROM plans WHERE
+		plan_id = #{planId}
+	</delete>
+
+	<!-- 6. 계획의 모든 관광지 삭제 -->
+	<delete id="deletePlanAttractions" parameterType="string">
+		DELETE FROM
+		plan_attractions WHERE plan_id = #{planId}
+	</delete>
+</mapper>

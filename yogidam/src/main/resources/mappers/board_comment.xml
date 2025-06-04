@@ -1,0 +1,46 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+  PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+  "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ssafy.trip.model.dao.BoardCommentDao">
+
+	<resultMap id="BoardCommentResultMap"
+		type="com.ssafy.trip.model.dto.BoardComment">
+		<id property="id" column="id" />
+		<result property="boardId" column="board_id" />
+		<result property="author" column="author" />
+		<result property="content" column="content" />
+		<result property="createdAt" column="created_at" />
+	</resultMap>
+
+	<select id="findByBoardIdPaged"
+		resultMap="BoardCommentResultMap">
+		SELECT * FROM board_comment
+		WHERE board_id = #{boardId}
+		ORDER
+		BY parent_id, id
+		LIMIT #{limit} OFFSET #{offset}
+	</select>
+	<select id="countByBoardId" resultType="int">
+		SELECT COUNT(*) FROM board_comment WHERE board_id = #{boardId}
+	</select>
+
+
+	<insert id="insert"
+		parameterType="com.ssafy.trip.model.dto.BoardComment">
+		INSERT INTO board_comment (board_id, author, content)
+		VALUES (#{boardId}, #{author}, #{content})
+	</insert>
+
+	<update id="update"
+		parameterType="com.ssafy.trip.model.dto.BoardComment">
+		UPDATE board_comment SET content = #{content}
+		WHERE id =
+		#{id}
+	</update>
+
+	<delete id="delete" parameterType="int">
+		DELETE FROM board_comment
+		WHERE id = #{id}
+	</delete>
+</mapper>
